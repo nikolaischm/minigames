@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong</title>
+    <style>
+        body {
+            background-color: #222;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        canvas {
+            background-color: #111;
+            border: 1px solid #333;
+        }
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div id="score">0 : 0</div>
+    <canvas id="pongCanvas" width="800" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('pongCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const paddleWidth = 10;
+        const paddleHeight = 100;
+        let paddle1Y = canvas.height / 2 - paddleHeight / 2;
+        let paddle2Y = canvas.height / 2 - paddleHeight / 2;
+        const paddleSpeed = 5;
+        let ball = { x: canvas.width / 2, y: canvas.height / 2, dx: 5, dy: 5, radius: 10 };
+        let score1 = 0;
+        let score2 = 0;
+
+        function drawPaddle(x, y) {
+            ctx.fillStyle = '#39ff14';
+            ctx.fillRect(x, y, paddleWidth, paddleHeight);
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.fillStyle = '#39ff14';
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function moveBall() {
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            // Check collision with walls
+            if (ball.y + ball.radius >= canvas.height || ball.y - ball.radius <= 0) {
+                ball.dy = -ball.dy;
+            }
+
+            // Check collision with paddles
+            if ((ball.x - ball.radius <= paddleWidth && ball.y >= paddle1Y && ball.y <= paddle1Y + paddleHeight) ||
+                (ball.x + ball.radius >= canvas.width - paddleWidth && ball.y >= paddle2Y && ball.y <= paddle2Y + paddleHeight)) {
+                ball.dx = -ball.dx;
+            }
+
+            // Check if ball passes the paddles
+            if (ball.x + ball.radius > canvas.width) {
+                score1++;
+                resetBall();
+            } else if (ball.x - ball.radius < 0) {
+                score2++;
+                resetBall();
+            }
+        }
+
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPaddle(0, paddle1Y);
+            drawPaddle(canvas.width - paddleWidth, paddle2Y);
+            drawBall();
+            moveBall();
+            drawScore();
+        }
+
+        function drawScore() {
+            ctx.font = '24px Arial';
+            ctx.fillText(`${score1} : ${score2}`, canvas.width / 2 - 40, 30);
+        }
+
+        function resetBall() {
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.dx = -ball.dx; // Change direction
+        }
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'w' && paddle1Y > 0) {
+                paddle1Y -= paddleSpeed;
+            } else if (event.key === 's' && paddle1Y < canvas.height - paddleHeight) {
+                paddle1Y += paddleSpeed;
+            } else if (event.key === 'ArrowUp' && paddle2Y > 0) {
+                paddle2Y -= paddleSpeed;
+            } else if (event.key === 'ArrowDown' && paddle2Y < canvas.height - paddleHeight) {
+                paddle2Y += paddleSpeed;
+            }
+        });
+
+        setInterval(update, 20);
+    </script>
+</body>
+</html>

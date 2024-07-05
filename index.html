@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minigames</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        .game-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+        }
+        .game-link {
+            text-decoration: none;
+            color: #333;
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            width: 200px;
+            text-align: center;
+            margin: 10px;
+        }
+        .game-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <h1>Willkommen zu unseren Minigames!</h1>
+    <div class="game-container">
+        <a href="snake.html" class="game-link">Snake</a>
+        <a href="pong.html" class="game-link">Pong</a>
+        <a href="tetris.html" class="game-link">Tetris</a>
+        <!-- Weitere Spiele hier hinzufügen -->
+    </div>
+</body>
+</html>

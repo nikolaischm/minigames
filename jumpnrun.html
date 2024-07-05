@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jump 'n' Run</title>
+    <style>
+        body {
+            background-color: #87CEEB;
+            margin: 0;
+            overflow: hidden;
+        }
+        #player {
+            width: 50px;
+            height: 50px;
+            background-color: #FF6347;
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+        }
+        .platform {
+            width: 100px;
+            height: 20px;
+            background-color: #2E8B57;
+            position: absolute;
+        }
+        .spike {
+            width: 20px;
+            height: 40px;
+            background-color: #8B0000;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div id="player"></div>
+
+    <script>
+        const player = document.getElementById('player');
+        let playerBottom = 0;
+        let gravity = 4; // Erhöhte Gravitation für schnellere Fallgeschwindigkeit
+        let isJumping = false;
+        let isMovingLeft = false;
+        let isMovingRight = false;
+
+        function jump() {
+            if (isJumping) return;
+            isJumping = true;
+            let jumpInterval = setInterval(() => {
+                if (playerBottom < 200) {
+                    playerBottom += 10;
+                    player.style.bottom = playerBottom + 'px';
+                } else {
+                    clearInterval(jumpInterval);
+                    let fallInterval = setInterval(() => {
+                        if (playerBottom > 0) {
+                            playerBottom -= gravity;
+                            player.style.bottom = playerBottom + 'px';
+                        } else {
+                            clearInterval(fallInterval);
+                            isJumping = false;
+                        }
+                    }, 20);
+                }
+            }, 20);
+        }
+
+        function moveLeft() {
+            isMovingLeft = true;
+            let leftInterval = setInterval(() => {
+                if (parseInt(player.style.left) > 0) {
+                    player.style.left = parseInt(player.style.left) - 5 + 'px';
+                }
+            }, 20);
+        }
+
+        function moveRight() {
+            isMovingRight = true;
+            let rightInterval = setInterval(() => {
+                if (parseInt(player.style.left) < window.innerWidth - 50) {
+                    player.style.left = parseInt(player.style.left) + 5 + 'px';
+                }
+            }, 20);
+        }
+
+        function stopMoving() {
+            isMovingLeft = false;
+            isMovingRight = false;
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === ' ' || event.key === 'ArrowUp') {
+                jump();
+            }
+            if (event.key === 'ArrowLeft') {
+                moveLeft();
+            }
+            if (event.key === 'ArrowRight') {
+                moveRight();
+            }
+        });
+
+        document.addEventListener('keyup', function(event) {
+            if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+                stopMoving();
+            }
+        });
+
+        function createPlatforms() {
+            // Initial platforms
+            createPlatform(100, 100);
+            createPlatform(300, 150);
+            createPlatform(500, 200);
+            createPlatform(700, 250);
+        }
+
+        function createPlatform(left, bottom) {
+            const platform = document.createElement('div');
+            platform.classList.add('platform');
+            platform.style.left = left + 'px';
+            platform.style.bottom = bottom + 'px';
+            document.body.appendChild(platform);
+        }
+
+        function createSpike(left, bottom) {
+            const spike = document.createElement('div');
+            spike.classList.add('spike');
+            spike.style.left = left + 'px';
+            spike.style.bottom = bottom + 'px';
+            document.body.appendChild(spike);
+        }
+
+        createPlatforms(); // Start creating initial platforms
+
+        // Create spikes as obstacles
+        createSpike(200, 180);
+        createSpike(400, 230);
+        createSpike(600, 280);
+
+        // Collision detection
+        setInterval(function() {
+            const platforms = document.querySelectorAll('.platform');
+            platforms.forEach(platform => {
+                if (isColliding(player, platform)) {
+                    playerBottom = parseInt(platform.style.bottom) + 50;
+                    player.style.bottom = playerBottom + 'px';
+                }
+            });
+
+            const spikes = document.querySelectorAll('.spike');
+            spikes.forEach(spike => {
+                if (isColliding(player, spike)) {
+                    handleGameOver();
+                }
+            });
+        }, 20);
+
+        function isColliding(player, element) {
+            const playerRect = player.getBoundingClientRect();
+            const elementRect = element.getBoundingClientRect();
+            return !(playerRect.right < elementRect.left ||
+                     playerRect.left > elementRect.right ||
+                     playerRect.bottom < elementRect.top ||
+                     playerRect.top > elementRect.bottom);
+        }
+
+        function handleGameOver() {
+            alert('Game Over!');
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>
